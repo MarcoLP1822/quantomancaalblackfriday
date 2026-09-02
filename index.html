@@ -484,11 +484,31 @@ function drawGround(off, wrap, vpx){
   ctx.shadowColor = ridge[5]; ctx.shadowBlur = 10;
   ctx.stroke(skyline); ctx.shadowBlur = 0;
 
-  // vanishing-point fan
+  /* Vanishing-point fan. A fixed handful of rays only reaches the screen edges near the
+     bottom, so everything beyond a couple of bands used to be bare horizontals with a
+     lattice hugging the road. Instead the ray count doubles with distance: cells halve on
+     screen as they recede, so every time a cell would fall under MINPX we drop back to
+     rays twice as far apart and keep going out to the edge. Each ray stops exactly on a
+     horizontal band line, so the level change hides under a line that is already there. */
+  const MINPX = Math.max(6, W * .013);          // narrowest cell we let the lattice reach
   ctx.strokeStyle = grid; ctx.lineWidth = 1.2; ctx.globalAlpha = .5;
-  for (let j = -16; j <= 16; j++){
-    ctx.beginPath(); ctx.moveTo(vpx, HZ); ctx.lineTo(W/2 + j * CW, H); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(vpx, HZ); ctx.lineTo(W / 2, H);    // the centre ray runs the whole way down
+  for (let m = 1; m <= 4096; m *= 2){            // one pass per level, cells m lanes wide
+    const iTop = Math.max(1, Math.min(LINES, Math.floor(m * CW / MINPX - off)));
+    const yTop = y(iTop), sTop = (yTop - HZ) / GH;         // where this level gives up
+    for (const sg of [-1, 1]) for (let j = m; ; j += 2 * m){   // odd multiples of m only:
+      const xb = W / 2 + sg * j * CW,                          // the rest belong to a
+            xt = lerp(vpx, xb, sTop),                          // coarser level
+            edge = sg > 0 ? W : 0;
+      if (sg * (xt - edge) > 0) break;            // starts off screen, and so does every
+      const s = Math.min(1, (edge - vpx) / (xb - vpx));        // ray further out
+      ctx.moveTo(xt, yTop);                       // the wide ones leave the frame long
+      ctx.lineTo(lerp(vpx, xb, s), HZ + GH * s);  // before the bottom: stop them there
+    }
+    if (iTop >= LINES) break;                     // this level already reaches the horizon
   }
+  ctx.stroke();
   ctx.globalAlpha = .7;
   for (let i = 1; i <= LINES; i++){
     const yy = y(i);
