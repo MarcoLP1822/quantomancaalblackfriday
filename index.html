@@ -110,7 +110,7 @@ body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:
 .driving .hint{opacity:0}
 
 /* ---------- 90s player ---------- */
-.win{position:absolute;left:24px;bottom:24px;width:302px;max-width:calc(100vw - 24px);z-index:8;
+.win{position:absolute;left:24px;bottom:24px;width:324px;max-width:calc(100vw - 24px);z-index:8;
   background:#c0c0c0;color:#000;font-family:var(--ui);font-size:12px;
   border:2px solid;border-color:#fff #000 #000 #fff;
   box-shadow:inset -1px -1px 0 #808080,inset 1px 1px 0 #dfdfdf,4px 4px 0 rgba(0,0,0,.45)}
@@ -130,7 +130,8 @@ body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:
 .lcd{background:#020a06;border:2px solid;border-color:#808080 #fff #fff #808080;padding:6px 7px;
   font-family:var(--mono);font-size:10.5px;line-height:1.65;color:var(--mint);
   text-shadow:0 0 6px rgba(5,255,161,.9);overflow:hidden}
-.lcd em{font-style:normal;letter-spacing:.32em;color:#fff;text-shadow:0 0 8px rgba(5,255,161,.9)}
+.lcd em{font-style:normal;letter-spacing:.16em;color:#fff;text-shadow:0 0 8px rgba(5,255,161,.9)}
+#lcdTrack{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .lcd .dim{opacity:.72}
 .row{display:flex;align-items:center;gap:6px;margin-top:7px}
 .row label{font-size:10px;letter-spacing:.12em;opacity:.75;min-width:30px}
@@ -160,7 +161,7 @@ body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:
 @media (max-width:620px){
   #palms svg:nth-child(2),#palms svg:nth-child(4){display:none}
   #palms svg{height:32vmin!important}          /* inline height, so !important is the short way */
-  .win{left:8px;bottom:8px;width:min(302px,94vw);
+  .win{left:8px;bottom:8px;width:min(324px,94vw);
   transform:scale(.86);transform-origin:left bottom}}
 </style>
 </head>
@@ -214,10 +215,11 @@ body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:
       <span class="ttl">Youcanprint Player</span>
       <span class="bx"><b>_</b><b>&#9633;</b><b>&#10005;</b></span>
     </div>
-    <div class="menu"><span>File</span><span id="mView">View</span><span id="mOpt">Options</span><span id="mHelp">Help</span></div>
+    <div class="menu"><span id="mFile">File</span><span id="mView">View</span><span id="mOpt">Options</span><span id="mHelp">Help</span></div>
     <div class="body">
       <div class="lcd">
-        <div><span id="pp">&#10074;&#10074;</span> NOW PLAYING <em>LUNAR WIND</em>.wav</div>
+        <div id="lcdTrack" title="Clicca per cambiare traccia">
+          <span id="pp">&#10074;&#10074;</span> NOW PLAYING <em id="lName">&nbsp;</em><span id="lExt"></span></div>
         <div class="dim">SPEED: <span id="lSpd">1.0</span>&times; &middot; GRID: <span id="lGrid">OUTRUN</span></div>
         <div class="dim"><span id="lTime">00:00:00</span> &middot; 44.1 kHz &middot; STEREO</div>
       </div>
@@ -528,7 +530,7 @@ $('#bFast').onclick = () => setSpeed(st.speed + 0.3);
 
 $('#mView').onclick = () => document.body.classList.toggle('noscan');
 $('#mOpt').onclick  = cycleGrid;
-$('#mHelp').onclick = () => status('Frecce sinistra/destra per guidare. Play per la musica.');
+$('#mHelp').onclick = () => status('Frecce per guidare. Play per la musica, display per cambiare traccia.');
 
 $('.tb .bx').onclick = e => {                             // any title-bar button rolls it up
   if (e.target.tagName === 'B') $('#win').classList.toggle('min');
@@ -590,38 +592,70 @@ function beat(n, t){
 function scheduler(){
   while (nextT < AC.currentTime + .15){ beat(step, nextT); step++; nextT += S16; }
 }
-$('#bPlay').onclick = () => {
-  if (!AC){
-    AC = new (window.AudioContext || window.webkitAudioContext)();
-    bus = AC.createGain(); bus.gain.value = .22;
-    const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 5200;
-    bus.connect(lp).connect(AC.destination);
-    delay = AC.createDelay(); delay.delayTime.value = 60 / BPM * 0.75;
-    const fb = AC.createGain(); fb.gain.value = .34;
-    delay.connect(fb).connect(delay); delay.connect(bus);
-    const len = AC.sampleRate * .5;
-    noise = AC.createBuffer(1, len, AC.sampleRate);
-    const d = noise.getChannelData(0);
-    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-  }
-  playing = !playing;
-  if (playing){
+function buildSynth(){
+  if (AC) return;
+  AC = new (window.AudioContext || window.webkitAudioContext)();
+  bus = AC.createGain(); bus.gain.value = .22;
+  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 5200;
+  bus.connect(lp).connect(AC.destination);
+  delay = AC.createDelay(); delay.delayTime.value = 60 / BPM * 0.75;
+  const fb = AC.createGain(); fb.gain.value = .34;
+  delay.connect(fb).connect(delay); delay.connect(bus);
+  const len = AC.sampleRate * .5;
+  noise = AC.createBuffer(1, len, AC.sampleRate);
+  const d = noise.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+}
+
+/* ---- two tracks: the mp3 file, and the generated stream ---- */
+const TRACKS = [
+  { name:'IL SCIACALLO SFATICATO', ext:'.mp3', src:'sciacallo-sfaticato.mp3' },
+  { name:'LUNAR WIND',             ext:'.gen', src:null }   // no file: WebAudio, live
+];
+let ti = 0;                                   // the mp3 is the default track
+const el = new Audio(); el.preload = 'none'; el.loop = true;
+const pad = n => String(n).padStart(2, '0');
+const clockText = s => pad(s / 3600 | 0) + ':' + pad(s / 60 % 60 | 0) + ':' + pad(s % 60);
+
+function showTrack(){
+  $('#lName').textContent = TRACKS[ti].name;
+  $('#lExt').textContent = TRACKS[ti].ext;
+}
+function stopAll(){
+  clearInterval(sched); clearInterval(clock);
+  el.pause();
+  if (AC) AC.suspend();
+  playing = false;
+  $('#pp').innerHTML = '&#10074;&#10074;'; $('#bPlay').innerHTML = '&#9654; Play';
+}
+function play(){
+  const t = TRACKS[ti];
+  if (t.src){
+    if (!el.src) el.src = t.src;
+    el.play().catch(() => status('Il browser ha bloccato la riproduzione.'));
+    clock = setInterval(() => { $('#lTime').textContent = clockText(el.currentTime | 0); }, 500);
+    status('Playing — ' + t.name + '.');
+  } else {
+    buildSynth();
     AC.resume(); nextT = AC.currentTime + .05;
     sched = setInterval(scheduler, 25);
-    clock = setInterval(() => {
-      played++;
-      const p = n => String(n).padStart(2, '0');
-      $('#lTime').textContent =
-        p(played / 3600 | 0) + ':' + p(played / 60 % 60 | 0) + ':' + p(played % 60);
-    }, 1000);
-    $('#pp').innerHTML = '&#9654;'; $('#bPlay').innerHTML = '&#10074;&#10074; Pause';
-    status('Playing — synthwave / outrun stream.');
-  } else {
-    clearInterval(sched); clearInterval(clock); AC.suspend();
-    $('#pp').innerHTML = '&#10074;&#10074;'; $('#bPlay').innerHTML = '&#9654; Play';
-    status('Paused.');
+    clock = setInterval(() => { $('#lTime').textContent = clockText(++played); }, 1000);
+    status('Playing — synthwave generato dal vivo.');
   }
+  playing = true;
+  $('#pp').innerHTML = '&#9654;'; $('#bPlay').innerHTML = '&#10074;&#10074; Pause';
+}
+$('#bPlay').onclick = () => { if (playing) { stopAll(); status('Paused.'); } else play(); };
+
+const nextTrack = () => {                     // the display doubles as the track selector
+  const wasPlaying = playing;
+  stopAll(); ti = (ti + 1) % TRACKS.length; showTrack();
+  $('#lTime').textContent = '00:00:00';
+  if (wasPlaying) play(); else status('Traccia: ' + TRACKS[ti].name + '.');
 };
+$('#lcdTrack').onclick = nextTrack;
+$('#mFile').onclick = nextTrack;
+showTrack();
 
 resize();
 requestAnimationFrame(frame);
