@@ -576,7 +576,7 @@ function drawGround(off, wrap, vpx){
   // roadside props, far to near so the near ones overlap correctly
   for (let i = PROPS; i >= 1; i--){
     const k = i + wrap, s = 1 / (i + off), yg = HZ + GH * s;
-    if (hash(k * 5.1, 3.3) < .03) drawArch(cx(s), yg, s, ridge[5], GH);
+    if (hash(k * 5.1, 3.3) < .012) drawArch(cx(s), yg, s, ridge[5], GH);   // ~1 ogni 57s
     for (const side of [-1, 1]){
       if (hash(k * 3.7, side * 11.3) > .05) continue;   // sparse: roughly 1 band in 20 per side
       const kind = (hash(k * 2.3, side * 4.7) * 5) | 0; // separate hash, or kind tracks density
