@@ -43,10 +43,11 @@ fascia di due unità di viewport: la matematica esplicita è più corta e non va
 strada e leggeva come un muro che slitta di lato; ora è un tracciato costruito una volta
 sola e ridisegnato solo al ridimensionamento.
 
-**Gli oggetti a bordo strada** — sciacallo, palo al neon, cartellone, cactus, e ogni tanto
-un arco che scavalca la carreggiata — sono decisi da una funzione hash sull'indice assoluto
-della banda. Non esiste una lista di oggetti da aggiornare: la stessa banda produce sempre
-lo stesso oggetto, quindi scorrono agganciati alla griglia e non serve memoria.
+**Gli oggetti a bordo strada** — sciacallo, palo al neon, cartellone, cactus, squadra da
+disegno, e ogni tanto un arco che scavalca la carreggiata — sono decisi da una funzione
+hash sull'indice assoluto della banda. Non esiste una lista di oggetti da aggiornare: la
+stessa banda produce sempre lo stesso oggetto, quindi scorrono agganciati alla griglia e
+non serve memoria.
 
 **La musica** ha due tracce. Una è un mp3. L'altra, `LUNAR WIND.gen`, non è un file: è
 synthwave costruito in WebAudio mentre la pagina gira — giro Am7–F–C–G a 100 BPM, basso a
