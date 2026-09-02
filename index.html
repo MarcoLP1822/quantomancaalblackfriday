@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Quanto manca al Black Friday</title>
+<meta name="description" content="Conto alla rovescia vaporwave per il Black Friday: mesi, settimane, giorni, ore e minuti.">
+<style>
+:root{
+  --pink:#ff71ce; --cyan:#01cdfe; --mint:#05ffa1; --violet:#b967ff; --yellow:#fffb96;
+  --night:#12002a;
+  --car:#ff71ce;
+  --serif:"Palatino Linotype",Palatino,"Iowan Old Style",Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --ui:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:hidden;
+  -webkit-user-select:none;user-select:none;touch-action:none}
+#scene{position:fixed;inset:0;overflow:hidden}
+
+/* ---------- sky ---------- */
+.sky{position:absolute;inset:0;
+  background:linear-gradient(to bottom,#0a0020 0%,#0a0020 16%,#2b0a5e 44%,#7a2a9e 57%,
+    #ff71ce 63%,#ff71ce 66%,var(--night) 66%)}
+.stars{position:absolute;left:0;right:0;top:0;height:66%;background-repeat:no-repeat;
+  background-size:3px 3px;animation:tw 6s ease-in-out infinite}
+.stars.a{background-image:
+  radial-gradient(circle,#fff 0 1px,transparent 1.6px),
+  radial-gradient(circle,var(--yellow) 0 1px,transparent 1.6px),
+  radial-gradient(circle,var(--cyan) 0 1px,transparent 1.6px),
+  radial-gradient(circle,var(--violet) 0 1px,transparent 1.6px),
+  radial-gradient(circle,#fff 0 1px,transparent 1.6px);
+  background-position:8% 14%,23% 31%,41% 9%,63% 25%,88% 17%}
+.stars.b{animation-delay:-3s;background-image:
+  radial-gradient(circle,var(--yellow) 0 1px,transparent 1.6px),
+  radial-gradient(circle,var(--cyan) 0 1px,transparent 1.6px),
+  radial-gradient(circle,#fff 0 1px,transparent 1.6px),
+  radial-gradient(circle,var(--violet) 0 1px,transparent 1.6px),
+  radial-gradient(circle,var(--cyan) 0 1px,transparent 1.6px);
+  background-position:15% 47%,34% 55%,52% 38%,74% 51%,93% 41%}
+@keyframes tw{0%,100%{opacity:.3}50%{opacity:1}}
+.haze{position:absolute;left:0;right:0;top:60%;height:12%;pointer-events:none;z-index:3;
+  background:linear-gradient(to bottom,transparent,rgba(255,113,206,.6) 55%,transparent);
+  filter:blur(6px)}
+
+/* ---------- sun ---------- */
+.sun,.sunglow{position:absolute;left:50%;top:20%;width:min(46vmin,380px);aspect-ratio:1;
+  border-radius:50%;transform:translate(-50%,-50%);animation:drift 40s ease-in-out infinite}
+.sunglow{background:var(--pink);opacity:.7;filter:blur(4px);z-index:1;
+  box-shadow:0 0 80px 30px rgba(255,113,206,.55),0 0 200px 80px rgba(255,251,150,.25)}
+.sun{z-index:2;background:linear-gradient(to bottom,var(--yellow) 0%,#ffb347 36%,var(--pink) 68%,var(--violet) 100%);
+  -webkit-mask-image:linear-gradient(to bottom,#000 0 52%,transparent 52% 55%,#000 55% 63%,
+    transparent 63% 67%,#000 67% 73.5%,transparent 73.5% 78.5%,#000 78.5% 83%,
+    transparent 83% 89%,#000 89% 92%,transparent 92% 100%);
+  mask-image:linear-gradient(to bottom,#000 0 52%,transparent 52% 55%,#000 55% 63%,
+    transparent 63% 67%,#000 67% 73.5%,transparent 73.5% 78.5%,#000 78.5% 83%,
+    transparent 83% 89%,#000 89% 92%,transparent 92% 100%)}
+@keyframes drift{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,calc(-50% + 4vh))}}
+
+/* ---------- ground ---------- */
+/* explicit width/height: a canvas is a replaced element, left/right would not stretch it */
+#ground{position:absolute;left:0;top:66%;width:100%;height:34%;z-index:4;display:block;
+  background:var(--night)}
+
+/* ---------- car ---------- */
+.car{position:absolute;left:50%;bottom:2.5vh;width:clamp(110px,18vw,210px);z-index:5;
+  transform:translateX(-50%);transform-origin:50% 100%;will-change:transform;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.65))}
+.car svg{display:block;width:100%;height:auto}
+
+/* ---------- countdown ---------- */
+.hud{position:absolute;left:50%;top:4vh;transform:translateX(-50%);width:min(94vw,880px);
+  text-align:center;pointer-events:none;z-index:6}
+.hud h1{margin:0;font-family:var(--serif);font-weight:700;line-height:1.05;
+  font-size:clamp(19px,4.2vmin,42px);letter-spacing:.02em;color:#fff;
+  text-shadow:2px 0 0 rgba(255,113,206,.85),-2px 0 0 rgba(1,205,254,.85),0 0 26px rgba(255,113,206,.55)}
+.kana{font-family:var(--mono);font-size:clamp(9px,1.5vmin,13px);letter-spacing:.45em;
+  color:var(--cyan);margin:.7em 0 1em;text-shadow:0 0 10px rgba(1,205,254,.8)}
+.units{display:flex;justify-content:center;gap:clamp(4px,1.2vw,12px);flex-wrap:wrap}
+.u{min-width:clamp(56px,11vw,116px);padding:.5em .3em .45em;border:1px solid rgba(5,255,161,.45);
+  border-radius:3px;background:rgba(6,0,20,.55);backdrop-filter:blur(2px);
+  box-shadow:inset 0 0 18px rgba(5,255,161,.14),0 0 20px rgba(0,0,0,.4)}
+.u b{display:block;font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;
+  font-size:clamp(24px,6vmin,58px);line-height:1;color:var(--mint);
+  text-shadow:0 0 14px rgba(5,255,161,.8)}
+.u span{display:block;font-family:var(--mono);font-size:clamp(7px,1.25vmin,11px);
+  letter-spacing:.28em;color:var(--yellow);margin-top:.7em;opacity:.9}
+.u i{display:block;font-style:normal;font-family:var(--mono);font-size:clamp(8px,1.4vmin,12px);
+  color:var(--violet);letter-spacing:.3em;margin-top:.25em}
+.target{font-family:var(--mono);font-size:clamp(9px,1.5vmin,13px);letter-spacing:.22em;
+  color:var(--pink);margin-top:1.1em;text-shadow:0 0 12px rgba(255,113,206,.7)}
+.hint{position:absolute;left:50%;bottom:1vh;transform:translateX(-50%);font-family:var(--mono);
+  font-size:11px;letter-spacing:.3em;color:rgba(255,255,255,.5);z-index:6;
+  transition:opacity .8s;pointer-events:none}
+.driving .hint{opacity:0}
+
+/* ---------- 90s player ---------- */
+.win{position:absolute;left:24px;bottom:24px;width:302px;max-width:calc(100vw - 24px);z-index:8;
+  background:#c0c0c0;color:#000;font-family:var(--ui);font-size:12px;
+  border:2px solid;border-color:#fff #000 #000 #fff;
+  box-shadow:inset -1px -1px 0 #808080,inset 1px 1px 0 #dfdfdf,4px 4px 0 rgba(0,0,0,.45)}
+.tb{display:flex;align-items:center;gap:5px;padding:2px 3px;cursor:move;
+  background:linear-gradient(90deg,#000082,#1084d0)}
+.tb .ico{width:14px;height:14px;display:grid;place-items:center;background:#c0c0c0;color:#000;
+  font-size:10px;border:1px solid;border-color:#fff #000 #000 #fff}
+.tb .ttl{flex:1;font-family:var(--serif);font-weight:700;color:#fff;font-size:13px}
+.tb .bx{display:flex;gap:2px}
+.tb .bx b{width:16px;height:14px;display:grid;place-items:center;background:#c0c0c0;font-size:9px;
+  border:1px solid;border-color:#fff #000 #000 #fff}
+.menu{display:flex;gap:1px;padding:1px 2px;border-bottom:1px solid #808080}
+.menu span{padding:1px 6px;cursor:default}
+.menu span:hover{background:#000082;color:#fff}
+.body{padding:7px}
+.lcd{background:#020a06;border:2px solid;border-color:#808080 #fff #fff #808080;padding:6px 7px;
+  font-family:var(--mono);font-size:10.5px;line-height:1.65;color:var(--mint);
+  text-shadow:0 0 6px rgba(5,255,161,.9);overflow:hidden}
+.lcd em{font-style:normal;letter-spacing:.32em;color:#fff;text-shadow:0 0 8px rgba(5,255,161,.9)}
+.lcd .dim{opacity:.72}
+.row{display:flex;align-items:center;gap:6px;margin-top:7px}
+.row label{font-size:10px;letter-spacing:.12em;opacity:.75;min-width:30px}
+.sw{display:flex;gap:4px;flex:1}
+.sw button{flex:1;height:17px;border:2px solid;border-color:#fff #000 #000 #fff;cursor:pointer;padding:0}
+.sw button[aria-pressed="true"]{border-color:#000 #fff #fff #000;box-shadow:inset 0 0 0 2px #c0c0c0}
+.meter{display:flex;gap:2px;height:14px;padding:2px;background:#fff;flex:1;
+  border:2px solid;border-color:#808080 #fff #fff #808080}
+.meter i{flex:1;background:#c0c0c0}
+.meter i.on{background:#000082}
+.btns{display:flex;gap:5px;margin-top:8px}
+.btns button{flex:1;height:24px;background:#c0c0c0;font-family:var(--ui);font-size:11px;cursor:pointer;
+  border:2px solid;border-color:#fff #000 #000 #fff;
+  box-shadow:inset -1px -1px 0 #808080,inset 1px 1px 0 #dfdfdf}
+.btns button:active{border-color:#000 #fff #fff #000;box-shadow:none;padding:1px 0 0 1px}
+.status{display:flex;gap:4px;padding:3px;border-top:1px solid #dfdfdf}
+.status span{padding:1px 5px;font-size:10.5px;border:1px solid;border-color:#808080 #fff #fff #808080}
+.status .s1{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status .s2{font-family:var(--mono);letter-spacing:.2em}
+
+/* ---------- crt ---------- */
+.scan{position:absolute;inset:0;pointer-events:none;opacity:.35;z-index:9;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,.35) 0 1px,transparent 1px 3px)}
+.noscan .scan{display:none}
+@media (prefers-reduced-motion:reduce){.sun,.sunglow,.stars{animation:none}}
+@media (max-height:620px){.hud{top:1.5vh}.win{transform:scale(.84);transform-origin:left bottom}}
+</style>
+</head>
+<body>
+<div id="scene">
+  <div class="sky"></div>
+  <div class="stars a"></div>
+  <div class="stars b"></div>
+  <div class="sunglow"></div>
+  <div class="sun"></div>
+  <div class="haze"></div>
+  <canvas id="ground"></canvas>
+
+  <div class="car" id="car">
+    <svg viewBox="0 0 200 120" aria-hidden="true">
+      <defs>
+        <linearGradient id="gl" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#01cdfe"/><stop offset="1" stop-color="#b967ff"/>
+        </linearGradient>
+        <filter id="bl" x="-60%" y="-200%" width="220%" height="500%">
+          <feGaussianBlur stdDeviation="6"/>
+        </filter>
+      </defs>
+      <ellipse cx="100" cy="113" rx="84" ry="7" fill="rgba(0,0,0,.45)"/>
+      <path d="M46 44h108l14 22H32z" fill="var(--car)" opacity=".92"/>
+      <path d="M58 46h84l9 16H49z" fill="#0b0320"/>
+      <path d="M58 46h84l9 16H49z" fill="url(#gl)" opacity=".45"/>
+      <rect x="22" y="62" width="156" height="34" rx="9" fill="var(--car)"/>
+      <rect x="22" y="62" width="156" height="10" rx="5" fill="#fff" opacity=".18"/>
+      <rect x="30" y="94" width="30" height="16" rx="5" fill="#150626"/>
+      <rect x="140" y="94" width="30" height="16" rx="5" fill="#150626"/>
+      <rect x="34" y="72" width="40" height="10" rx="5" fill="#ff2b6d" filter="url(#bl)"/>
+      <rect x="126" y="72" width="40" height="10" rx="5" fill="#ff2b6d" filter="url(#bl)"/>
+      <rect x="34" y="72" width="40" height="10" rx="5" fill="#ff2b6d"/>
+      <rect x="126" y="72" width="40" height="10" rx="5" fill="#ff2b6d"/>
+      <rect x="86" y="86" width="28" height="7" rx="3" fill="#0b0320" opacity=".8"/>
+    </svg>
+  </div>
+
+  <div class="hud">
+    <h1>QUANTO MANCA AL BLACK FRIDAY</h1>
+    <div class="kana">&#12502; &#12521; &#12483; &#12463; &#12539; &#12501; &#12521; &#12452; &#12487; &#12540; &#12414; &#12391;</div>
+    <div class="units" id="units" role="timer" aria-label="conto alla rovescia"></div>
+    <div class="target" id="target"></div>
+  </div>
+
+  <div class="win" id="win">
+    <div class="tb" id="tb">
+      <span class="ico">&#9672;</span>
+      <span class="ttl">Lunar Wind Player</span>
+      <span class="bx"><b>_</b><b>&#9633;</b><b>&#10005;</b></span>
+    </div>
+    <div class="menu"><span>File</span><span id="mView">View</span><span id="mOpt">Options</span><span id="mHelp">Help</span></div>
+    <div class="body">
+      <div class="lcd">
+        <div><span id="pp">&#10074;&#10074;</span> NOW PLAYING <em>LUNAR WIND</em>.wav</div>
+        <div class="dim">SPEED: <span id="lSpd">1.0</span>&times; &middot; GRID: <span id="lGrid">CRUISE</span></div>
+        <div class="dim"><span id="lTime">00:00:00</span> &middot; 44.1 kHz &middot; STEREO</div>
+      </div>
+      <div class="row"><label>CAR</label><div class="sw" id="sw"></div></div>
+      <div class="row"><label>LVL</label><div class="meter" id="meter"></div></div>
+      <div class="btns">
+        <button id="bPlay">&#9654; Play</button>
+        <button id="bSlow">&#9666;&#9666; Slow</button>
+        <button id="bFast">&#9656;&#9656; Fast</button>
+        <button id="bGrid">&#9638; Grid</button>
+      </div>
+    </div>
+    <div class="status"><span class="s1" id="st">Paused.</span><span class="s2">&#65405;&#65416;&#65439;&#65392;&#65412;&#65439;</span></div>
+  </div>
+
+  <div class="hint">&larr; &rarr; PER GUIDARE</div>
+  <div class="scan"></div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+
+/* ============ countdown ============ */
+const clampDay = (y,m,d) => new Date(y, m, Math.min(d, new Date(y, m+1, 0).getDate()));
+
+function blackFriday(y){                        // 4th Thursday of November + 1 day
+  const firstThu = 1 + ((4 - new Date(y,10,1).getDay() + 7) % 7);
+  return new Date(y, 10, firstThu + 22, 0, 0, 0, 0);
+}
+const nextBF = now => now < blackFriday(now.getFullYear())
+  ? blackFriday(now.getFullYear()) : blackFriday(now.getFullYear() + 1);
+
+function breakdown(now, target){
+  let months = 0, cur = new Date(now);
+  for(;;){
+    const n = clampDay(cur.getFullYear(), cur.getMonth() + 1, cur.getDate());
+    n.setHours(cur.getHours(), cur.getMinutes(), cur.getSeconds(), cur.getMilliseconds());
+    if (n <= target){ cur = n; months++; } else break;
+  }
+  let ms = target - cur;
+  const W = 6048e5, D = 864e5, H = 36e5;
+  const weeks = Math.floor(ms / W); ms -= weeks * W;
+  const days  = Math.floor(ms / D); ms -= days * D;
+  const hours = Math.floor(ms / H); ms -= hours * H;
+  return { months, weeks, days, hours, minutes: Math.floor(ms / 6e4) };
+}
+
+const UNITS = [['months','MESI','月'],['weeks','SETTIMANE','週'],['days','GIORNI','日'],
+               ['hours','ORE','時'],['minutes','MINUTI','分']];
+$('#units').innerHTML = UNITS.map(([k,l,j]) =>
+  '<div class="u"><b id="v-' + k + '">--</b><span>' + l + '</span><i>' + j + '</i></div>').join('');
+
+function tick(){
+  const now = new Date(), bf = nextBF(now), b = breakdown(now, bf);
+  for (const [k] of UNITS) $('#v-' + k).textContent = String(b[k]).padStart(2,'0');
+  $('#units').setAttribute('aria-label', 'mancano ' + b.months + ' mesi, ' + b.weeks +
+    ' settimane, ' + b.days + ' giorni, ' + b.hours + ' ore e ' + b.minutes + ' minuti');
+  $('#target').textContent = bf.toLocaleDateString('it-IT',
+    {weekday:'long', day:'numeric', month:'long', year:'numeric'}).toUpperCase();
+}
+tick(); setInterval(tick, 10000);
+
+/* ============ the road (canvas, exact perspective) ============
+   A grid line at world index i sits at screen y = h / (i + off), so off in [0,1)
+   scrolls seamlessly and the road is simply a triangle to the vanishing point. */
+const cv = $('#ground'), ctx = cv.getContext('2d');
+let W = 0, H = 0, RW = 0;                       // road half-width at the bottom edge
+
+function resize(){                              // cheap enough to check every frame
+  if (cv.clientWidth === W && cv.clientHeight === H) return;
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  W = cv.clientWidth; H = cv.clientHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  RW = W * 0.22;
+}
+
+const GRIDS = [
+  ['CRUISE', '#01cdfe', '#ff71ce', '#fffb96'],
+  ['NEON',   '#05ffa1', '#01cdfe', '#ffffff'],
+  ['SUNSET', '#ff71ce', '#fffb96', '#01cdfe'],
+  ['VOID',   '#b967ff', '#05ffa1', '#ff71ce']
+];
+let gi = 0, theme = GRIDS[0];
+const LINES = 46;
+
+function drawGround(off, wrap, vpx){
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#12002a'; ctx.fillRect(0, 0, W, H);
+  const [, grid, edge, dash] = theme;
+  const y = i => H / (i + off);                 // i = 1 is the nearest band
+
+  // vanishing-point fan
+  ctx.strokeStyle = grid; ctx.lineWidth = 1.2; ctx.globalAlpha = .55;
+  for (let j = -16; j <= 16; j++){
+    ctx.beginPath(); ctx.moveTo(vpx, 0); ctx.lineTo(W/2 + j * W * 0.075, H); ctx.stroke();
+  }
+  // horizontal bands
+  ctx.globalAlpha = .75;
+  for (let i = 1; i <= LINES; i++){
+    const yy = y(i);
+    ctx.lineWidth = Math.max(.5, 2.6 / (i + off));
+    ctx.beginPath(); ctx.moveTo(0, yy); ctx.lineTo(W, yy); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+
+  // asphalt
+  const road = ctx.createLinearGradient(0, 0, 0, H);
+  road.addColorStop(0, '#1b0536'); road.addColorStop(1, '#2a0748');
+  ctx.fillStyle = road;
+  ctx.beginPath(); ctx.moveTo(vpx, 0); ctx.lineTo(W/2 - RW, H); ctx.lineTo(W/2 + RW, H);
+  ctx.closePath(); ctx.fill();
+
+  // rumble strips + centre dashes, band by band
+  const lerp = (a, b, t) => a + (b - a) * t;
+  for (let i = 1; i <= LINES - 1; i++){
+    const y0 = y(i), y1 = y(i + 1);
+    if (y0 - y1 < .4) break;
+    const sNear = y0 / H, sFar = y1 / H;        // 0 at the horizon, 1 at the bottom edge
+    const c0 = lerp(vpx, W/2, sNear), c1 = lerp(vpx, W/2, sFar);
+    const w0 = RW * sNear, w1 = RW * sFar;
+    const on = ((i + wrap) & 1) === 0;
+    ctx.fillStyle = on ? edge : '#ffffff';
+    for (const sgn of [-1, 1]){
+      ctx.beginPath();
+      ctx.moveTo(c0 + sgn * w0, y0);           ctx.lineTo(c0 + sgn * w0 * 1.1, y0);
+      ctx.lineTo(c1 + sgn * w1 * 1.1, y1);     ctx.lineTo(c1 + sgn * w1, y1);
+      ctx.closePath(); ctx.fill();
+    }
+    if (on){
+      ctx.fillStyle = dash;
+      ctx.beginPath();
+      ctx.moveTo(c0 - w0 * .035, y0); ctx.lineTo(c0 + w0 * .035, y0);
+      ctx.lineTo(c1 + w1 * .035, y1); ctx.lineTo(c1 - w1 * .035, y1);
+      ctx.closePath(); ctx.fill();
+    }
+  }
+  // glowing edges
+  ctx.strokeStyle = edge; ctx.lineWidth = 2; ctx.shadowColor = edge; ctx.shadowBlur = 14;
+  for (const sgn of [-1, 1]){
+    ctx.beginPath(); ctx.moveTo(vpx, 0); ctx.lineTo(W/2 + sgn * RW, H); ctx.stroke();
+  }
+  ctx.shadowBlur = 0;
+}
+
+/* ============ driving ============ */
+const st = { speed:1, x:0, vx:0, off:1, wrap:0, t:0 };
+const keys = { l:0, r:0 };
+const dirKey = k => ({arrowleft:'l', a:'l', arrowright:'r', d:'r'})[k.toLowerCase()];
+addEventListener('keydown', e => {
+  const d = dirKey(e.key);
+  if (d){ keys[d] = 1; document.body.classList.add('driving'); e.preventDefault(); }
+});
+addEventListener('keyup', e => { const d = dirKey(e.key); if (d) keys[d] = 0; });
+addEventListener('blur', () => { keys.l = keys.r = 0; });
+$('#scene').addEventListener('pointerdown', e => {        // touch: hold a screen half
+  if (e.target.closest('.win')) return;
+  keys[e.clientX < innerWidth / 2 ? 'l' : 'r'] = 1;
+  document.body.classList.add('driving');
+});
+addEventListener('pointerup', () => { keys.l = keys.r = 0; });
+
+const car = $('#car');
+const bars = Array.from({length:20}, () => {
+  const i = document.createElement('i'); $('#meter').append(i); return i;
+});
+
+let last = performance.now();
+function frame(now){
+  const dt = Math.min(.05, (now - last) / 1000); last = now; st.t += dt;
+  resize();
+
+  st.vx += (keys.r - keys.l) * 4.2 * dt;
+  st.vx *= Math.pow(.015, dt);                            // friction
+  st.x = Math.max(-1, Math.min(1, st.x + st.vx * dt * 1.5));
+  if (Math.abs(st.x) === 1) st.vx = 0;                    // ponytail: hard edge, no crash model
+
+  st.off -= st.speed * 1.15 * dt;
+  while (st.off < 0){ st.off += 1; st.wrap++; }
+  drawGround(st.off, st.wrap, W / 2 - st.x * W * 0.035);
+
+  car.style.transform = 'translateX(calc(-50% + ' + (st.x * RW * 0.5) + 'px)) translateY(' +
+    (Math.sin(st.t * 9) * st.speed * 1.2) + 'px) rotate(' + (st.vx * 3.2) + 'deg)';
+
+  const lit = Math.round(st.speed / 2.5 * bars.length);
+  for (let i = 0; i < bars.length; i++) bars[i].classList.toggle('on', i < lit);
+  requestAnimationFrame(frame);
+}
+
+/* ============ the 90s player ============ */
+const status = t => { $('#st').textContent = t; };
+
+const CARS = [['#ff71ce','PINK'],['#01cdfe','CYAN'],['#05ffa1','MINT'],['#b967ff','VIOLET'],['#fffb96','YELLOW']];
+$('#sw').innerHTML = CARS.map(([c,n],i) =>
+  '<button data-i="' + i + '" style="background:' + c + '" title="' + n +
+  '" aria-label="carrozzeria ' + n + '" aria-pressed="' + (i === 0) + '"></button>').join('');
+$('#sw').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.documentElement.style.setProperty('--car', CARS[b.dataset.i][0]);
+  for (const x of $('#sw').children) x.setAttribute('aria-pressed', x === b);
+  status('Carrozzeria: ' + CARS[b.dataset.i][1] + '.');
+};
+
+const cycleGrid = () => {
+  gi = (gi + 1) % GRIDS.length; theme = GRIDS[gi];
+  $('#lGrid').textContent = theme[0];
+  status('Paesaggio: ' + theme[0] + '.');
+};
+$('#bGrid').onclick = cycleGrid;
+
+const setSpeed = v => {
+  st.speed = Math.max(0.4, Math.min(2.5, Math.round(v * 10) / 10));
+  $('#lSpd').textContent = st.speed.toFixed(1);
+  status('Velocita ' + st.speed.toFixed(1) + 'x.');
+};
+$('#bSlow').onclick = () => setSpeed(st.speed - 0.3);
+$('#bFast').onclick = () => setSpeed(st.speed + 0.3);
+
+$('#mView').onclick = () => document.body.classList.toggle('noscan');
+$('#mOpt').onclick  = cycleGrid;
+$('#mHelp').onclick = () => status('Frecce sinistra/destra per guidare. Play per la musica.');
+
+$('#tb').addEventListener('pointerdown', e => {           // draggable window
+  const w = $('#win'), r = w.getBoundingClientRect();
+  const dx = e.clientX - r.left, dy = e.clientY - r.top;
+  w.style.bottom = 'auto'; w.style.top = r.top + 'px';
+  const mv = ev => {
+    w.style.left = Math.max(0, Math.min(innerWidth - r.width, ev.clientX - dx)) + 'px';
+    w.style.top  = Math.max(0, Math.min(innerHeight - r.height, ev.clientY - dy)) + 'px';
+  };
+  const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); };
+  addEventListener('pointermove', mv); addEventListener('pointerup', up);
+  e.preventDefault();
+});
+
+/* ============ synthwave engine (WebAudio, no audio files) ============ */
+let AC, bus, delay, noise, playing = false, step = 0, nextT = 0, sched, clock, played = 0;
+const BPM = 100, S16 = 60 / BPM / 4;
+const CHORDS = [[57,60,64,67],[53,57,60,65],[48,52,55,60],[55,59,62,67]];   // Am7 F C G
+const mtf = m => 440 * Math.pow(2, (m - 69) / 12);
+
+function tone(type, f, t, dur, gain, dest, detune){
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.value = f; o.detune.value = detune || 0;
+  g.gain.setValueAtTime(.0001, t);
+  g.gain.exponentialRampToValueAtTime(gain, t + .015);
+  g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g).connect(dest || bus); o.start(t); o.stop(t + dur + .05);
+}
+function hit(t, freq, dur, gain, type){
+  const s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+  s.buffer = noise; f.type = type; f.frequency.value = freq;
+  g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  s.connect(f).connect(g).connect(bus); s.start(t); s.stop(t + dur);
+}
+function kick(t){
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(45, t + .12);
+  g.gain.setValueAtTime(.9, t); g.gain.exponentialRampToValueAtTime(.0001, t + .3);
+  o.connect(g).connect(bus); o.start(t); o.stop(t + .32);
+}
+function beat(n, t){
+  const ch = CHORDS[Math.floor(n / 16) % 4], s = n % 16, root = ch[0] - 24;
+  if (s % 8 === 0 || s === 6) kick(t);
+  if (s === 4 || s === 12) hit(t, 1600, .16, .35, 'bandpass');
+  if (s % 2 === 1) hit(t, 8000, .04, .10, 'highpass');
+  if (s === 0 || s === 3 || s === 6 || s === 8 || s === 11 || s === 14)
+    tone('sawtooth', mtf(root), t, .22, .28);
+  if (s % 2 === 0) tone('square', mtf(ch[(s / 2) % 4] + 12), t, .18, .07, delay);
+  if (s === 0) for (const m of ch){
+    tone('sawtooth', mtf(m), t, S16 * 15, .045);
+    tone('sawtooth', mtf(m), t, S16 * 15, .045, null, 9);
+  }
+}
+function scheduler(){
+  while (nextT < AC.currentTime + .15){ beat(step, nextT); step++; nextT += S16; }
+}
+$('#bPlay').onclick = () => {
+  if (!AC){
+    AC = new (window.AudioContext || window.webkitAudioContext)();
+    bus = AC.createGain(); bus.gain.value = .22;
+    const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 5200;
+    bus.connect(lp).connect(AC.destination);
+    delay = AC.createDelay(); delay.delayTime.value = 60 / BPM * 0.75;
+    const fb = AC.createGain(); fb.gain.value = .34;
+    delay.connect(fb).connect(delay); delay.connect(bus);
+    const len = AC.sampleRate * .5;
+    noise = AC.createBuffer(1, len, AC.sampleRate);
+    const d = noise.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  }
+  playing = !playing;
+  if (playing){
+    AC.resume(); nextT = AC.currentTime + .05;
+    sched = setInterval(scheduler, 25);
+    clock = setInterval(() => {
+      played++;
+      const p = n => String(n).padStart(2, '0');
+      $('#lTime').textContent =
+        p(played / 3600 | 0) + ':' + p(played / 60 % 60 | 0) + ':' + p(played % 60);
+    }, 1000);
+    $('#pp').innerHTML = '&#9654;'; $('#bPlay').innerHTML = '&#10074;&#10074; Pause';
+    status('Playing — synthwave / outrun stream.');
+  } else {
+    clearInterval(sched); clearInterval(clock); AC.suspend();
+    $('#pp').innerHTML = '&#10074;&#10074;'; $('#bPlay').innerHTML = '&#9654; Play';
+    status('Paused.');
+  }
+};
+
+resize();
+requestAnimationFrame(frame);
+
+/* ============ self check: open the page with #test ============ */
+window.selfTest = function(){
+  const ok = (c, m) => { if (!c) throw new Error('FAIL ' + m); console.log('ok - ' + m); };
+  ok(blackFriday(2026).getMonth() === 10 && blackFriday(2026).getDate() === 27, 'BF 2026 = 27 nov');
+  ok(blackFriday(2025).getDate() === 28, 'BF 2025 = 28 nov');
+  ok(blackFriday(2024).getDate() === 29, 'BF 2024 = 29 nov');
+  ok(blackFriday(2021).getDate() === 26, 'BF 2021 = 26 nov');
+  const b = breakdown(new Date(2026,8,2,0,0), new Date(2026,10,27,0,0));
+  ok(b.months === 2 && b.weeks === 3 && b.days === 4 && b.hours === 0 && b.minutes === 0,
+     '2 set 2026 -> 2m 3w 4d ' + JSON.stringify(b));
+  const c = breakdown(new Date(2026,0,31,12,0), new Date(2026,2,1,13,30));  // 31 gen -> clamp a 28 feb
+  ok(c.months === 1 && c.hours === 1 && c.minutes === 30, 'clamp fine mese ' + JSON.stringify(c));
+  return 'self-test passed';
+};
+if (location.hash === '#test') console.log(window.selfTest());
+</script>
+</body>
+</html>
