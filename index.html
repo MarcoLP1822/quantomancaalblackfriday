@@ -62,6 +62,12 @@ body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:
   mask-image:linear-gradient(to bottom,#000 0 52%,transparent 52% 55%,#000 55% 63%,
     transparent 63% 67%,#000 67% 73.5%,transparent 73.5% 78.5%,#000 78.5% 83%,
     transparent 83% 89%,#000 89% 92%,transparent 92% 100%)}
+/* Logo sits INSIDE .sun, so the sun's stripe mask clips it and the scanlines
+   (::after, painted later) run over the top. multiply keeps white areas invisible. */
+.sun .logo{position:absolute;left:50%;top:50%;width:64%;transform:translate(-50%,-50%);
+  opacity:.3;mix-blend-mode:multiply;pointer-events:none;
+  -webkit-mask-image:radial-gradient(circle,#000 40%,transparent 72%);
+  mask-image:radial-gradient(circle,#000 40%,transparent 72%)}
 .sun::after{content:"";position:absolute;inset:0;border-radius:50%;
   background:repeating-linear-gradient(to bottom,rgba(26,0,48,.6) 0 2px,transparent 2px 6px)}
 @keyframes drift{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,calc(-50% + 4vh))}}
@@ -164,7 +170,7 @@ body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:
   <div class="stars a"></div>
   <div class="stars b"></div>
   <div class="sunglow"></div>
-  <div class="sun"></div>
+  <div class="sun"><img class="logo" src="logo.png" alt="" onerror="this.remove()"></div>
   <div class="haze"></div>
   <div id="palms"></div>
   <canvas id="ground"></canvas>
