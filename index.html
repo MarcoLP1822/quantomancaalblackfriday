@@ -199,28 +199,43 @@ body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:
   <canvas id="ground"></canvas>
 
   <div class="car" id="car">
+    <!-- Coda in stile F40: alettone a tutta larghezza su due montanti, cofano motore
+         feritoiato, quattro fari tondi attorno alla griglia, tre scarichi in mezzo.
+         A 110px di larghezza sono questi quattro segni a farla riconoscere. -->
     <svg viewBox="0 0 200 120" aria-hidden="true">
       <defs>
-        <linearGradient id="gl" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#01cdfe"/><stop offset="1" stop-color="#b967ff"/>
-        </linearGradient>
         <filter id="bl" x="-60%" y="-200%" width="220%" height="500%">
-          <feGaussianBlur stdDeviation="6"/>
+          <feGaussianBlur stdDeviation="5"/>
         </filter>
       </defs>
-      <ellipse cx="100" cy="113" rx="84" ry="7" fill="rgba(0,0,0,.45)"/>
-      <path d="M46 44h108l14 22H32z" fill="var(--car)" opacity=".92"/>
-      <path d="M58 46h84l9 16H49z" fill="#0b0320"/>
-      <path d="M58 46h84l9 16H49z" fill="url(#gl)" opacity=".45"/>
-      <rect x="22" y="62" width="156" height="34" rx="9" fill="var(--car)"/>
-      <rect x="22" y="62" width="156" height="10" rx="5" fill="#fff" opacity=".18"/>
-      <rect x="30" y="94" width="30" height="16" rx="5" fill="#150626"/>
-      <rect x="140" y="94" width="30" height="16" rx="5" fill="#150626"/>
-      <rect x="34" y="72" width="40" height="10" rx="5" fill="#ff2b6d" filter="url(#bl)"/>
-      <rect x="126" y="72" width="40" height="10" rx="5" fill="#ff2b6d" filter="url(#bl)"/>
-      <rect x="34" y="72" width="40" height="10" rx="5" fill="#ff2b6d"/>
-      <rect x="126" y="72" width="40" height="10" rx="5" fill="#ff2b6d"/>
-      <rect x="86" y="86" width="28" height="7" rx="3" fill="#0b0320" opacity=".8"/>
+      <ellipse cx="100" cy="114" rx="86" ry="6" fill="rgba(0,0,0,.45)"/>
+      <rect x="6" y="74" width="22" height="36" rx="6" fill="#0a0418"/>
+      <rect x="172" y="74" width="22" height="36" rx="6" fill="#0a0418"/>
+      <rect x="54" y="26" width="10" height="16" fill="var(--car)" opacity=".78"/>
+      <rect x="136" y="26" width="10" height="16" fill="var(--car)" opacity=".78"/>
+      <rect x="15" y="18" width="170" height="9" rx="3" fill="var(--car)"/>
+      <rect x="15" y="18" width="170" height="3" rx="1.5" fill="#fff" opacity=".25"/>
+      <path d="M64 38h72l14 22H50z" fill="var(--car)" opacity=".95"/>
+      <path d="M61.5 42h77M59 46.5h82.5M56 51h88M53 55.5h94" stroke="#0b0320"
+            stroke-width="2.6" opacity=".75" stroke-linecap="round"/>
+      <rect x="18" y="57" width="164" height="34" rx="8" fill="var(--car)"/>
+      <rect x="18" y="57" width="164" height="9" rx="4.5" fill="#fff" opacity=".16"/>
+      <rect x="74" y="67" width="52" height="15" rx="4" fill="#0b0320" opacity=".9"/>
+      <g fill="#ff2b6d">
+        <g filter="url(#bl)">
+          <circle cx="44" cy="74" r="6"/><circle cx="60" cy="74" r="6"/>
+          <circle cx="140" cy="74" r="6"/><circle cx="156" cy="74" r="6"/>
+        </g>
+        <circle cx="44" cy="74" r="6"/><circle cx="60" cy="74" r="6"/>
+        <circle cx="140" cy="74" r="6"/><circle cx="156" cy="74" r="6"/>
+      </g>
+      <path d="M26 89h148l-10 17H36z" fill="#1e0a3a"/>
+      <path d="M46 92v11M60 92v11M74 92v11M126 92v11M140 92v11M154 92v11"
+            stroke="#0b0320" stroke-width="2.4"/>
+      <g fill="#0b0320" stroke="#7a54bd" stroke-width="1.5">
+        <circle cx="88" cy="96" r="4.5"/><circle cx="100" cy="96" r="5"/>
+        <circle cx="112" cy="96" r="4.5"/>
+      </g>
     </svg>
   </div>
 
