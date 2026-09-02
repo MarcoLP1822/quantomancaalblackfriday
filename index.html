@@ -151,7 +151,10 @@ body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:
 .noscan .scan{display:none}
 @media (prefers-reduced-motion:reduce){.sun,.sunglow,.stars{animation:none}}
 @media (max-height:620px){.hud{top:1.5vh}.win{transform:scale(.84);transform-origin:left bottom}}
-@media (max-width:620px){.win{left:8px;bottom:8px;width:min(302px,94vw);
+@media (max-width:620px){
+  #palms svg:nth-child(2),#palms svg:nth-child(4){display:none}
+  #palms svg{height:32vmin!important}          /* inline height, so !important is the short way */
+  .win{left:8px;bottom:8px;width:min(302px,94vw);
   transform:scale(.86);transform-origin:left bottom}}
 </style>
 </head>
@@ -272,29 +275,36 @@ function tick(){
 tick(); setInterval(tick, 10000);
 
 /* ============ palm silhouettes ============ */
-function frond(a, len, droop){                  // one feathered leaf as a single path
-  const P = t => [Math.cos(a) * len * t, Math.sin(a) * len * t + droop * t * t];
-  const [tx, ty] = P(1);
-  let d = 'M0 ' + (-len * .035) + 'L' + tx + ' ' + ty + 'L0 ' + (len * .035) + 'Z';
-  const N = 16;
-  for (let k = 1; k < N; k++){
-    const t = k / N, [x, y] = P(t), [x2, y2] = P(t + 1 / N);
-    const dx = x2 - x, dy = y2 - y, L = Math.hypot(dx, dy) || 1;
-    const w = len * .3 * Math.pow(Math.sin(Math.PI * t), .7);
-    for (const sg of [1, -1]){                  // barbs swept back towards the crown
-      const bx = (-dy / L * sg - dx / L * .55) * w, by = (dx / L * sg - dy / L * .55) * w;
-      d += 'M' + x + ' ' + y + 'L' + (x + bx) + ' ' + (y + by + w * .25) + 'L' + x2 + ' ' + y2 + 'Z';
+/* One hand-drawn frond, pointing along +x with its lobes hanging at +y, placed by
+   rotation. Several procedural attempts all read as fir branches; a single authored
+   blade is both shorter and actually palm-shaped. */
+const BLADE = [
+  ['M',   0, -4], ['C',  52,-30, 104,-32, 156, -5],
+  ['C', 150,  9, 143, 16, 133, 23], ['C', 128, 11, 121,  7, 109,  8],
+  ['C', 112, 17, 107, 24,  99, 30], ['C',  95, 17,  88, 13,  77, 14],
+  ['C',  78, 23,  72, 29,  63, 34], ['C',  60, 21,  54, 17,  44, 18],
+  ['C',  43, 26,  37, 30,  28, 33], ['C',  28, 21,  20, 14,   0,  7], ['Z']
+];
+function blade(a, sc, my){            // my = -1 mirrors, so left-hand fronds droop too
+  const ca = Math.cos(a) * sc, sa = Math.sin(a) * sc;
+  return BLADE.map(seg => {
+    let s = seg[0];
+    for (let i = 1; i < seg.length; i += 2){
+      const x = seg[i], y = seg[i + 1] * my;
+      s += (i > 1 ? ' ' : '') + (x * ca - y * sa).toFixed(1) + ' ' + (x * sa + y * ca).toFixed(1);
     }
-  }
-  return d;
+    return s;
+  }).join('');
 }
 function palm(lean, seed){
   const rnd = n => (Math.sin(seed * 9.7 + n * 4.3) + 1) / 2;
-  let d = 'M-7 0Q' + (lean * 22) + ' 78 ' + (lean * 34 - 5) + ' 168L' + (lean * 34 + 9) +
-          ' 168Q' + (lean * 22 + 11) + ' 78 7 0Z';                       // trunk
-  for (let k = 0; k < 8; k++){
-    const a = Math.PI * 1.1 + (k + rnd(k) * .6) / 8 * Math.PI * .8;      // fan over the crown
-    d += frond(a, 88 + rnd(k + 20) * 44, 62 + rnd(k + 40) * 55);
+  const b = lean * 62;                          // slim trunk with a real S-curve
+  let d = 'M-4 0C' + (b * .05) + ' 56 ' + (b * .58) + ' 120 ' + (b - 9) + ' 178' +
+          'L' + (b + 13) + ' 178C' + (b * .58 + 14) + ' 120 ' + (b * .05 + 9) + ' 56 5 0Z';
+  const F = 8;
+  for (let k = 0; k < F; k++){                  // fan from just below right round to left
+    const a = -.14 - (k + rnd(k) * .55) / (F - .45) * (Math.PI - .28);
+    d += blade(a, .78 + rnd(k + 20) * .38, a < -Math.PI / 2 ? -1 : 1);
   }
   return d;
 }
@@ -303,7 +313,7 @@ document.getElementById('palms').innerHTML =
    ['right:1.5%', 57, 3], ['right:14.5%', 36, 4]].map(([pos, vm, seed], i) => {
     const h = vm + 'vmin';                      // vmin, so tall phone screens don't blow them up
     const lean = i < 2 ? -1 : 1, flip = i < 2 ? '' : ' transform="scale(-1,1)"';
-    return '<svg viewBox="-150 -140 300 320" style="' + pos + ';height:' + h + '" aria-hidden="true">' +
+    return '<svg viewBox="-205 -210 410 400" style="' + pos + ';height:' + h + '" aria-hidden="true">' +
       '<g' + flip + '><path d="' + palm(lean < 0 ? .35 : .35, seed) + '" fill="#0d0b2b"/></g></svg>';
   }).join('');
 
@@ -320,6 +330,7 @@ function resize(){                              // cheap enough to check every f
   cv.width = W * dpr; cv.height = H * dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   RW = W * 0.22;
+  skyline = null;                               // rebuilt on the next draw at the new size
 }
 
 const GRIDS = [                                 // name, grid, road edge, dashes, ridge low/high
@@ -339,7 +350,7 @@ function bakeRidge(){                           // 6 stops from the ridge base c
 }
 bakeRidge();
 
-const LINES = 46, MBANDS = 20, MCOLS = 15;      // ponytail: caps keep the mesh under ~450 quads
+const LINES = 46, PROPS = 26;                   // how many bands can carry a roadside prop
 const hash = (a, b) => { const n = Math.sin(a * 127.1 + b * 311.7) * 43758.5; return n - Math.floor(n); };
 function vnoise(x, y){
   const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi;
@@ -347,10 +358,43 @@ function vnoise(x, y){
   const t = lerp(hash(xi, yi), hash(xi + 1, yi), u);
   return lerp(t, lerp(hash(xi, yi + 1), hash(xi + 1, yi + 1), u), v);
 }
-function terrain(j, k){                         // 0 on the road corridor, rising to the sides
-  const e = Math.abs(j) - 3.4;
-  if (e <= 0) return 0;
-  return Math.min(1, e / 3.5) * (vnoise(j * .45, k * .32) * .95 + vnoise(j * .9, k * .64) * .35);
+
+/* Static skyline. It does NOT scroll — a ridge that slides past at road speed reads as
+   a wall sliding sideways, which is exactly what looked wrong. Rebuilt only on resize. */
+let skyline = null;
+function buildSkyline(HZ, GH){
+  skyline = new Path2D();
+  skyline.moveTo(0, HZ + 1);
+  for (let i = 0; i <= 72; i++){
+    const x = i / 72 * W;
+    const h = vnoise(i * .17, 3.7) * .72 + vnoise(i * .43, 9.1) * .28;
+    const gap = Math.min(1, Math.abs(x - W / 2) / (W * .19));   // keep the road mouth clear
+    skyline.lineTo(x, HZ + 1 - h * GH * .5 * gap * gap);
+  }
+  skyline.lineTo(W, HZ + 1); skyline.closePath();
+}
+
+/* Roadside props keyed to the ABSOLUTE band index, so they ride the grid exactly. */
+const PROP_PALMS = [new Path2D(palm(.35, 5)), new Path2D(palm(-.35, 11))];
+function drawProp(kind, px, py, sc, neon){
+  if (kind === 0){                                            // palm, reusing the SVG path
+    ctx.save(); ctx.translate(px, py); ctx.scale(sc, sc); ctx.translate(0, -176);
+    ctx.fillStyle = '#0d0b2b'; ctx.fill(PROP_PALMS[px > W / 2 ? 1 : 0]); ctx.restore();
+  } else if (kind === 1){                                     // neon pylon
+    const h = 150 * sc;
+    ctx.strokeStyle = neon; ctx.lineWidth = Math.max(1, 5 * sc);
+    ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py - h); ctx.stroke();
+    ctx.fillStyle = neon; ctx.shadowColor = neon; ctx.shadowBlur = 12 * sc + 4;
+    ctx.beginPath(); ctx.arc(px, py - h, Math.max(1.2, 9 * sc), 0, 7); ctx.fill();
+    ctx.shadowBlur = 0;
+  } else {                                                    // billboard
+    const w = 120 * sc, h = 78 * sc, y = py - 190 * sc;
+    ctx.strokeStyle = neon; ctx.lineWidth = Math.max(1, 3 * sc);
+    ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, y + h); ctx.stroke();
+    ctx.fillStyle = 'rgba(12,2,32,.85)'; ctx.fillRect(px - w / 2, y, w, h);
+    ctx.shadowColor = neon; ctx.shadowBlur = 10 * sc + 3;
+    ctx.strokeRect(px - w / 2, y, w, h); ctx.shadowBlur = 0;
+  }
 }
 
 function drawGround(off, wrap, vpx){
@@ -361,6 +405,13 @@ function drawGround(off, wrap, vpx){
   const y = i => HZ + GH / (i + off);           // i = 1 is the nearest band
   const CW = W * 0.075;                         // one lattice cell at the bottom edge
   const cx = s => lerp(vpx, W / 2, s);
+
+  // static skyline behind everything
+  if (!skyline) buildSkyline(HZ, GH);
+  ctx.fillStyle = '#170432'; ctx.fill(skyline);
+  ctx.strokeStyle = ridge[4]; ctx.lineWidth = 1.6;
+  ctx.shadowColor = ridge[5]; ctx.shadowBlur = 10;
+  ctx.stroke(skyline); ctx.shadowBlur = 0;
 
   // vanishing-point fan
   ctx.strokeStyle = grid; ctx.lineWidth = 1.2; ctx.globalAlpha = .5;
@@ -410,25 +461,14 @@ function drawGround(off, wrap, vpx){
   }
   ctx.shadowBlur = 0;
 
-  // wireframe ridges, painted far to near so the mesh occludes itself
-  const YS = GH * 2.1;
-  const px = (j, i) => {
-    const s = 1 / (i + off), yg = HZ + GH * s;
-    return [cx(s) + j * CW * s, yg - terrain(j, i + wrap) * s * YS, s];
-  };
-  ctx.lineWidth = 1;
-  for (let i = MBANDS; i >= 1; i--){
-    for (let j = -MCOLS; j < MCOLS; j++){
-      const h = terrain(j, i + wrap), h2 = terrain(j + 1, i + wrap),
-            h3 = terrain(j + 1, i + 1 + wrap), h4 = terrain(j, i + 1 + wrap);
-      if (h + h2 + h3 + h4 < .02) continue;
-      const a = px(j, i), b = px(j + 1, i), c = px(j + 1, i + 1), d = px(j, i + 1);
-      ctx.beginPath();
-      ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.lineTo(d[0], d[1]);
-      ctx.closePath();
-      ctx.fillStyle = '#150130'; ctx.fill();
-      ctx.strokeStyle = ridge[Math.min(5, (Math.max(h, h2) * 6) | 0)];
-      ctx.stroke();
+  // roadside props, far to near so the near ones overlap correctly
+  for (let i = PROPS; i >= 1; i--){
+    const k = i + wrap, s = 1 / (i + off), yg = HZ + GH * s;
+    for (const side of [-1, 1]){
+      const r = hash(k * 3.7, side * 11.3);
+      if (r > .26) continue;                    // ~1 band in 4 carries something per side
+      const lane = 4.4 + hash(k * 1.9, side * 7.1) * 3.4;
+      drawProp((r * 97 | 0) % 3, cx(s) + side * lane * CW * s, yg, s * .9, ridge[5]);
     }
   }
 }
