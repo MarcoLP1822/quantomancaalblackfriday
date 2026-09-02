@@ -211,7 +211,7 @@ body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:
   <div class="win" id="win">
     <div class="tb" id="tb">
       <span class="ico">&#9672;</span>
-      <span class="ttl">Lunar Wind Player</span>
+      <span class="ttl">Youcanprint Player</span>
       <span class="bx"><b>_</b><b>&#9633;</b><b>&#10005;</b></span>
     </div>
     <div class="menu"><span>File</span><span id="mView">View</span><span id="mOpt">Options</span><span id="mHelp">Help</span></div>
@@ -485,7 +485,7 @@ function frame(now){
   st.x = Math.max(-1, Math.min(1, st.x + st.vx * dt * 1.5));
   if (Math.abs(st.x) === 1) st.vx = 0;                    // ponytail: hard edge, no crash model
 
-  st.off -= st.speed * 1.15 * dt;
+  st.off -= st.speed * 1.45 * dt;               // base rate, so every speed step gains ~25%
   while (st.off < 0){ st.off += 1; st.wrap++; }
   drawGround(st.off, st.wrap, W / 2 - st.x * W * 0.035);
 
