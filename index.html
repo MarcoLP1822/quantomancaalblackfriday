@@ -199,9 +199,10 @@ body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:
   <canvas id="ground"></canvas>
 
   <div class="car" id="car">
-    <!-- Coda in stile F40: alettone su due montanti, cofano feritoiato, e soprattutto
-         il pannello nero incassato che tiene i quattro fari tondi e la targa chiara.
-         A 110px di larghezza sono questi i segni che sopravvivono. -->
+    <!-- Coda in stile F40. L'arco non lo fa l'alettone da solo: sono i parafanghi
+         posteriori, alti ai lati, con in mezzo il piano motore basso e feritoiato.
+         La lama ci si appoggia sopra e sotto ci si vede attraverso.
+         Piu giu, il pannello nero incassato con quattro fari tondi e la targa. -->
     <svg viewBox="0 0 200 120" aria-hidden="true">
       <defs>
         <filter id="bl" x="-60%" y="-200%" width="220%" height="500%">
@@ -211,13 +212,12 @@ body{margin:0;background:var(--night);color:#fff;font-family:var(--ui);overflow:
       <ellipse cx="100" cy="114" rx="86" ry="6" fill="rgba(0,0,0,.45)"/>
       <rect x="6" y="74" width="22" height="36" rx="6" fill="#0a0418"/>
       <rect x="172" y="74" width="22" height="36" rx="6" fill="#0a0418"/>
-      <rect x="54" y="23" width="10" height="15" fill="var(--car)" opacity=".78"/>
-      <rect x="136" y="23" width="10" height="15" fill="var(--car)" opacity=".78"/>
-      <rect x="15" y="15" width="170" height="9" rx="3" fill="var(--car)"/>
-      <rect x="15" y="15" width="170" height="3" rx="1.5" fill="#fff" opacity=".25"/>
-      <path d="M64 36h72l14 22H50z" fill="var(--car)" opacity=".95"/>
-      <path d="M61.5 40h77M59 44.5h82.5M56 49h88M53 53.5h94" stroke="#0b0320"
+      <path d="M34 38h132l8 20H26z" fill="var(--car)" opacity=".95"/>
+      <path d="M32 42h136M31 46h138M29 50h142M28 54h144" stroke="#0b0320"
             stroke-width="2.6" opacity=".75" stroke-linecap="round"/>
+      <path d="M24 58V34Q24 20 44 20h112q20 0 20 14v24" fill="none" stroke="var(--car)"
+            stroke-width="9"/>
+      <rect x="52" y="17" width="96" height="3" rx="1.5" fill="#fff" opacity=".3"/>
       <rect x="18" y="54" width="164" height="38" rx="7" fill="var(--car)"/>
       <rect x="18" y="54" width="164" height="6" rx="3" fill="#fff" opacity=".18"/>
       <rect x="34" y="58" width="132" height="22" rx="4" fill="#0b0320"/>
